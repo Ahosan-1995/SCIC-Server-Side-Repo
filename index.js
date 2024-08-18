@@ -78,6 +78,25 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/products', async (req, res) => {
+            let { page = 1, limit = 6} = req.query;
+            const skip = (page - 1) * limit;
+            const query = {};
+            let option = {};
+            
+            const products = await productCollection.find(query, option).skip(Number(skip)).limit(Number(limit)).toArray();
+            res.send(products);
+          })
+      
+          app.get('/productCount', async (req, res) => {
+            let { } = req.query;
+            
+            const query = {};
+            
+            const docCount = await productCollection.find(query).toArray();
+            res.send(docCount);
+          })
+
 
 
         await client.db("admin").command({ ping: 1 });
