@@ -79,7 +79,7 @@ async function run() {
         })
 
         app.get('/products', async (req, res) => {
-            let { page = 1, limit = 6, search, sorting } = req.query;
+            let { page = 1, limit = 6, search, sorting, category } = req.query;
             const skip = (page - 1) * limit;
             const query = {};
             let option = {};
@@ -104,17 +104,24 @@ async function run() {
                 }
             }
 
+            if (category) {
+                query.category = new RegExp(category, 'i');
+            }
+
             const products = await productCollection.find(query, option).skip(Number(skip)).limit(Number(limit)).toArray();
             res.send(products);
         })
 
         app.get('/productCount', async (req, res) => {
-            let { search } = req.query;
+            let { search, category } = req.query;
 
             const query = {};
 
             if (search) {
                 query.name = new RegExp(search, 'i');
+            }
+            if (category) {
+                query.category = new RegExp(category, 'i');
             }
 
             const docCount = await productCollection.find(query).toArray();
