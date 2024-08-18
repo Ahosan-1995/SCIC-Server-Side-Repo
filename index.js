@@ -63,7 +63,7 @@ async function run() {
         app.put('/user', async (req, res) => {
             const user = req.body;
             const query = { email: user?.email };
-            
+
             const findUser = await userCollection.findOne(query);
             if (findUser) {
                 const option = {
@@ -79,23 +79,30 @@ async function run() {
         })
 
         app.get('/products', async (req, res) => {
-            let { page = 1, limit = 6} = req.query;
+            let { page = 1, limit = 6, search } = req.query;
             const skip = (page - 1) * limit;
             const query = {};
             let option = {};
-            
+            if (search) {
+                query.name = new RegExp(search, 'i');
+            }
+
             const products = await productCollection.find(query, option).skip(Number(skip)).limit(Number(limit)).toArray();
             res.send(products);
-          })
-      
-          app.get('/productCount', async (req, res) => {
-            let { } = req.query;
-            
+        })
+
+        app.get('/productCount', async (req, res) => {
+            let { search } = req.query;
+
             const query = {};
-            
+
+            if (search) {
+                query.name = new RegExp(search, 'i');
+            }
+
             const docCount = await productCollection.find(query).toArray();
             res.send(docCount);
-          })
+        })
 
 
 
